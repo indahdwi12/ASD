@@ -1,0 +1,68 @@
+#Indah Dwi Suciati (2309116076)
+
+class Produk:
+    def __init__(self, kode, nama, harga, stok):
+        self.kode = kode
+        self.nama = nama
+        self.harga = harga
+        self.stok = stok
+
+    def tampilkan_info(self):
+        return(f"Kode: {self.kode}. Nama: {self.nama}, Harga: {self.harga}, Stok: {self.stok}")
+
+class TokoBaju:
+    def __init__(self):
+        self.daftar_produk = {}
+
+    def tambah_produk(self, produk):
+        self.daftar_produk[produk.kode] = produk
+
+    def lihat_produk(self, kode):
+        if kode in self.daftar_produk:
+            produk = self.daftar_produk[kode]
+            print(produk.tampilkan_info())
+        else:
+            print("Produk dengan kode yang anda masukkan tidak ditemukan!")
+
+    def lihat_semua_produk(self):
+        print("Daftar Produk:")
+        result = []
+        for produk in self.daftar_produk.values():
+            result.append(produk.tampilkan_info())
+        return "\n".join(result)
+
+    def beli_produk(self, kode, jumlah):
+        if kode in self.daftar_produk:
+            produk = self.daftar_produk[kode]
+            if jumlah <= produk.stok:
+                produk.stok -= jumlah
+                return(f"Produk {produk.nama} telah dibeli sejumlah {jumlah}.")
+            else:
+                return("Stok tidak mencukupi.")
+        else:
+            return("Produk dengan kode tersebut tidak ditemukan.")
+
+toko_baju = TokoBaju()
+
+#menambahkan produk
+produk1 = Produk("P01", "Seragam Sekolah", 165000, 55)
+toko_baju.tambah_produk(produk1)
+
+produk2 = Produk("P02", "Baju Pramuka", 80000, 40)
+toko_baju.tambah_produk(produk2)
+
+produk3 = Produk("P03", "Baju Olahraga", 125000, 35)
+toko_baju.tambah_produk(produk3)
+
+produk4 = Produk("P04", "Dasi Sekolah", 15000, 25)
+toko_baju.tambah_produk(produk4)
+
+produk5 = Produk("P05", "Baju PDH", 100000, 50)
+toko_baju.tambah_produk(produk5)
+
+print(toko_baju.lihat_semua_produk())
+
+kode_produk = input("Masukkan kode produk yang ingin dibeli: ")
+jumlah_beli = int(input("Masukkan jumlah produk yang ingin anda beli: "))
+print(toko_baju.beli_produk(kode_produk, jumlah_beli))
+print(toko_baju.lihat_semua_produk())
