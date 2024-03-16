@@ -1,0 +1,264 @@
+class Produk:
+    def __init__(self, kode, nama, harga, stok):
+        self.kode = kode
+        self.nama = nama
+        self.harga = harga
+        self.stok = stok
+
+    def tampilkan_info(self):
+        return f"Kode: {self.kode}. Nama: {self.nama}, Harga: {self.harga}, Stok: {self.stok}"
+
+
+class Node:
+    def __init__(self, data=None):
+        self.data = data
+        self.next_node = None
+
+
+class ProdukLinkedList:
+    def __init__(self):
+        self.head = None
+
+    def tambah_di_awal(self, produk):
+        new_node = Node(produk)
+        new_node.next_node = self.head
+        self.head = new_node
+
+    def tambah_di_akhir(self, produk):
+        new_node = Node(produk)
+        if not self.head:
+            self.head = new_node
+            return
+        current = self.head
+        while current.next_node:
+            current = current.next_node
+        current.next_node = new_node
+
+    def tambah_di_antara(self, produk, kode_sebelum):
+        new_node = Node(produk)
+        current = self.head
+        while current:
+            if current.data.kode == kode_sebelum:
+                new_node.next_node = current.next_node
+                current.next_node = new_node
+                return
+            current = current.next_node
+        print("Produk dengan kode yang anda masukkan tidak ada")
+
+    def hapus_di_awal(self):
+        if self.head:
+            self.head = self.head.next_node
+        else:
+            print("Linked List sudah kosong")
+
+    def hapus_di_akhir(self):
+        if not self.head:
+            print("Linked List sudah kosong.")
+            return
+        if not self.head.next_node:
+            self.head = None
+            return
+        current = self.head
+        while current.next_node.next_node:
+            current = current.next_node
+        current.next_node = None
+
+    def hapus_di_antara(self, kode_produk):
+        if not self.head:
+            print("Linked list sudah kosong")
+            return
+        if self.head.data.kode == kode_produk:
+            self.head = self.head.next_node
+            return
+        current = self.head
+        while current.next_node and current.next_node.data.kode != kode_produk:
+            current = current.next_node
+        if not current.next_node:
+            print("Produk dengan kode yang anda masukkan tidak ada")
+        else:
+            current.next_node = current.next_node.next_node
+
+    def lihat_semua_produk(self):
+        result = []
+        current = self.head
+        while current:
+            result.append(current.data.tampilkan_info())
+            current = current.next_node
+        return "\n".join(result)
+
+    def quick_sort(self, arr, order, attribute):
+        if len(arr) <= 1:
+            return arr
+        else:
+            pivot = getattr(arr[0], attribute)
+            left = []
+            right = []
+            for x in arr[1:]:
+                if order == "asc":
+                    if getattr(x, attribute) <= pivot:
+                        left.append(x)
+                    else:
+                        right.append(x)
+                elif order == "desc":
+                    if getattr(x, attribute) >= pivot:
+                        left.append(x)
+                    else:
+                        right.append(x)
+                else:
+                    print("Invalid sorting order.")
+                    return
+
+            return self.quick_sort(left, order, attribute) + [arr[0]] + self.quick_sort(right, order, attribute)
+
+    def sort_produk(self, order, attribute):
+        if not self.head:
+            print("Linked list is empty.")
+            return
+
+        current = self.head
+        produk_list = []
+        while current:
+            produk_list.append(current.data)
+            current = current.next_node
+
+        sorted_produk = self.quick_sort(produk_list, order, attribute)
+        self.head = None  # Clear the current linked list
+        for produk in sorted_produk:
+            self.tambah_di_akhir(produk)
+
+    def jump_search(self, head, value, attribute):
+        current = head
+        length = 0
+
+        # Hitung panjang linked list
+        while current:
+            length += 1
+            current = current.next_node
+
+        # Lakukan jump search
+        current = head
+        jump = int(length ** 0.5)
+        left, right = 0, 0
+
+        # Langkah melalui linked list untuk mencari rentang yang berisi nilai yang dicari
+        while right < length and getattr(current.data, attribute) < value:
+            left = right
+            right = min(length - 1, right + jump)
+            for _ in range(right - left):
+                current = current.next_node
+
+        # Lakukan pencarian linear dalam rentang yang diidentifikasi
+        for _ in range(left, right + 1):
+            if current and getattr(current.data, attribute) == value:
+                return current.data
+            if current:
+                current = current.next_node
+
+        return None
+
+# Membuat linked list dan menambahkan produk
+linked_list = ProdukLinkedList()
+
+produk1 = Produk("P01", "Seragam Sekolah", 165000, 55)
+produk2 = Produk("P02", "Baju Pramuka", 80000, 40)
+produk3 = Produk("P03", "Baju Olahraga", 125000, 35)
+produk4 = Produk("P04", "Dasi Sekolah", 15000, 25)
+produk5 = Produk("P05", "Baju PDH", 100000, 50)
+
+linked_list.tambah_di_awal(produk1)
+linked_list.tambah_di_akhir(produk2)
+linked_list.tambah_di_akhir(produk3)
+linked_list.tambah_di_akhir(produk4)
+linked_list.tambah_di_akhir(produk5)
+
+def tambah_produk():
+    kode = input("Masukkan kode produk: ")
+    nama = input("Masukkan nama produk: ")
+    harga = int(input("Masukkan harga produk: "))
+    stok = int(input("Masukkan stok produk: "))
+    
+    produk_baru = Produk(kode, nama, harga, stok)
+    linked_list.tambah_di_akhir(produk_baru)
+    print("Produk berhasil ditambahkan.")
+
+def hapus_produk():
+    kode = input("Masukkan kode produk yang ingin dihapus: ")
+    linked_list.hapus_di_antara(kode)
+    print("Produk berhasil dihapus.")
+
+# Menampilkan seluruh produk dalam linked list
+print("Daftar Produk:")
+print(linked_list.lihat_semua_produk())
+
+while True:
+    print("\nPilih operasi:")
+    print("1. Tambah Produk")
+    print("2. Hapus Produk")
+    print("3. Keluar")
+
+    pilihan = input("Masukkan pilihan Anda: ")
+
+    if pilihan == "1":
+        tambah_produk()
+    elif pilihan == "2":
+        hapus_produk()
+    elif pilihan == "3":
+        break
+    else:
+        print("Pilihan tidak valid. Silakan pilih kembali.")
+
+    # Menampilkan daftar produk setelah operasi
+    print("\nDaftar Produk saat ini:")
+    print(linked_list.lihat_semua_produk())
+
+print("Terima kasih!")
+
+# Menunggu input untuk melihat hasil sorting ascending
+input("Jika ingin melihat hasil sorting ascending, tekan apapun yang kamu mau!")
+
+# Sorting ascending berdasarkan harga
+linked_list.sort_produk("asc", "harga")
+print("\nSorted Linked List (Ascending based on Harga):")
+print(linked_list.lihat_semua_produk())
+
+# Menunggu input untuk melihat hasil sorting descending
+input("Tekan apapun untuk melihat hasil sorting descending!")
+
+# Sorting descending berdasarkan stok
+linked_list.sort_produk("desc", "stok")
+print("\nSorted Linked List (Descending based on Stok):")
+print(linked_list.lihat_semua_produk())
+
+# Pemanggilan fungsi jump search untuk mencari produk berdasarkan kode produk
+while True:
+    kode_produk = input("\nMasukkan kode produk yang ingin Anda cari (atau ketik 'selesai' untuk keluar): ")
+    if kode_produk.lower() == 'selesai':
+        break
+    found_produk_by_code = linked_list.jump_search(linked_list.head, kode_produk, "kode")
+    if found_produk_by_code:
+        print("\nProduk ditemukan:")
+        print(found_produk_by_code.tampilkan_info())
+    else:
+        print("Produk tidak ditemukan.")
+
+        # Tanya pengguna apakah ingin mencari harga produk
+        cari_harga_produk = input("\nApakah Anda ingin mencari harga produk? (ya/tidak): ")
+        if cari_harga_produk.lower() == 'ya':
+            # Pemanggilan fungsi jump search untuk mencari produk berdasarkan harga produk
+            while True:
+                harga_produk = input("Masukkan harga produk yang ingin Anda cari (atau ketik 'selesai' untuk keluar): ")
+                if harga_produk.lower() == 'selesai':
+                    break
+                # Periksa apakah input merupakan bilangan bulat
+                if harga_produk.isdigit():
+                    harga_produk = int(harga_produk)
+                    found_produk_by_price = linked_list.jump_search(linked_list.head, harga_produk, "harga")
+                    if found_produk_by_price:
+                        print("\nProduk ditemukan:")
+                        print(found_produk_by_price.tampilkan_info())
+                    else:
+                        print("Produk tidak ditemukan.")
+                else:
+                    print("Masukkan bilangan bulat untuk harga produk.")
+        else:
+            print("Terima kasih!")
